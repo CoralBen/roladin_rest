@@ -1,0 +1,235 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 20px;
+}
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-container {
+    max-width: 450px;
+    width: 100%;
+}
+
+.register-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.auth-card-header {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 20px 20px 0 0 !important;
+    text-align: center;
+    padding: 30px;
+    border: none;
+}
+
+.auth-form-control {
+    border-radius: 15px;
+    border: 2px solid #e9ecef;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.auth-form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.auth-input-group-text {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 15px 0 0 15px;
+    border-left: none;
+}
+
+.auth-input-group .form-control {
+    border-radius: 0 15px 15px 0;
+    border-right: none;
+}
+
+.auth-input-group:focus-within .auth-input-group-text {
+    border-color: #667eea;
+}
+
+.logo-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #ffd89b, #19547b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.home-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.home-link:hover {
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #667eea;
+}
+
+.strength-progress {
+    height: 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.strength-weak { 
+    background-color: #dc3545; 
+}
+
+.strength-medium { 
+    background-color: #ffc107; 
+}
+
+.strength-strong { 
+    background-color: #198754; 
+}
+
+.demo-users {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.demo-user {
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+}
+
+.demo-user:hover {
+    background: rgba(102, 126, 234, 0.05);
+    transform: scale(1.05);
+}
+
+.demo-user.selected {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+.field-icon {
+    color: #667eea;
+}
+
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.auth-btn-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.auth-btn-outline {
+    border: 2px solid #667eea;
+    color: #667eea;
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.auth-btn-outline:hover {
+    background: #667eea;
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.fade-in-auth {
+    animation: fadeInAuth 0.8s ease forwards;
+}
+
+@keyframes fadeInAuth {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        padding: 20px 15px;
+    }
+    
+    .auth-card-header {
+        padding: 20px;
+    }
+    
+    .logo-icon {
+        font-size: 3rem;
+    }
+    
+    .demo-user {
+        margin-bottom: 10px;
+    }
+}

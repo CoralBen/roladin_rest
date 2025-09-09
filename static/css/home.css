@@ -1,0 +1,156 @@
+.hero-section {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 60px 30px;
+    text-align: center;
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+}
+
+.section-title {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    font-weight: 600;
+}
+
+.category-card {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.category-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover .category-icon {
+    transform: scale(1.1);
+}
+
+.category-btn {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.menu-item-card {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.menu-item-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.menu-item-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.menu-item-card:hover .menu-item-image {
+    transform: scale(1.05);
+}
+
+.menu-item-placeholder {
+    height: 200px;
+    background: linear-gradient(135deg, 
+#f8f9fa, 
+#e9ecef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.menu-item-card:hover .menu-item-placeholder {
+    background: linear-gradient(135deg, 
+#e9ecef, 
+#dee2e6);
+}
+
+.add-to-cart-form {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.menu-item-card:hover .add-to-cart-form {
+    opacity: 1;
+}
+
+.add-to-cart-btn {
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    transform: scale(1.05);
+}
+
+.cta-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.info-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    height: 100%;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.info-card i {
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover i {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 40px 20px;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .category-icon {
+        font-size: 2.5rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 30px 15px;
+    }
+
+    .hero-section .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .menu-item-image,
+    .menu-item-placeholder {
+        height: 150px;
+    }
+}
