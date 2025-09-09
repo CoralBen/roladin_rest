@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>העגלה שלי</title>
+  <!-- חיבור לקובץ העיצוב של העגלה -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+</head>
+<body>
+  <div class="cart-container">
+    <div class="cart-card">
+      <div class="cart-header">🛒 העגלה שלי</div>
+
+      {% if cart_items and cart_items|length > 0 %}
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>שם פריט</th>
+            <th>כמות</th>
+            <th>מחיר יח׳</th>
+            <th>סה״כ</th>
+            <th>הסר</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ '%.2f'|format(item.price) }} ₪</td>
+            <td>{{ '%.2f'|format(item.price * item.quantity) }} ₪</td>
+            <td>
+              <form method="post" action="{{ url_for('remove_from_cart') }}">
+                <input type="hidden" name="item_index" value="{{ loop.index0 }}">
+                <button type="submit" class="cart-btn-outline">הסר</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3">סה״כ לתשלום</td>
+            <td colspan="2">{{ '%.2f'|format(total) }} ₪</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="cart-actions">
+        <a href="{{ url_for('menu') }}" class="cart-btn-outline">⬅ חזרה לתפריט</a>
+        <a href="{{ url_for('checkout') }}" class="cart-btn-primary">המשך לתשלום ➡</a>
+      </div>
+
+      {% else %}
+      <div class="cart-empty">
+        <p>העגלה שלך ריקה 😢</p>
+        <a href="{{ url_for('menu') }}" class="cart-btn-primary">לעיון בתפריט</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

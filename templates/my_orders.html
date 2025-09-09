@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>ההזמנות שלי</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+    }
+    .orders-card {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 30px;
+      animation: fadeIn 0.6s ease;
+    }
+    .orders-header {
+      text-align: center;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    table th, table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .btn-primary {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 12px;
+      padding: 8px 15px;
+      font-weight: bold;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="orders-card">
+    <div class="orders-header">📋 ההזמנות שלי</div>
+
+    {% if orders and orders|length > 0 %}
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>מס׳ הזמנה</th>
+            <th>תאריך</th>
+            <th>סה״כ</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.created_at }}</td>   {# בלי strftime - מציג מחרוזת ישירות #}
+            <td>₪{{ '%.2f'|format(order.total_amount) }}</td>
+            <td>
+              {% if order.status == 'confirmed' %}
+                <span class="badge bg-success">מאושרת</span>
+              {% elif order.status == 'pending' %}
+                <span class="badge bg-warning">בהמתנה</span>
+              {% elif order.status == 'delivered' %}
+                <span class="badge bg-info">נמסרה</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ order.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('order_details', order_id=order.id) }}" class="btn btn-primary btn-sm">
+                🔍 פרטים
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="text-center p-4">
+        <h5>עדיין לא ביצעת הזמנות 😢</h5>
+        <a href="{{ url_for('menu') }}" class="btn btn-primary mt-3">🍰 לעיון בתפריט</a>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

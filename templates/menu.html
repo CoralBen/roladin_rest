@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תפריט - מסעדת רולדין</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/menu.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-birthday-cake"></i> מסעדת רולדין
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home"></i> בית</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/menu"><i class="fas fa-utensils"></i> תפריט</a>
+                    </li>
+                    {% if user %}
+                        {% if user.role == 'customer' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/cart">
+                                    <i class="fas fa-shopping-cart"></i> עגלה
+                                    {% if session.cart %}
+                                        <span class="badge bg-danger cart-badge">{{ session.cart|length }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/my_orders"><i class="fas fa-list"></i> ההזמנות שלי</a>
+                            </li>
+                        {% elif user.role == 'employee' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt"></i> דשבורד</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> התנתק</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> התחבר</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/register"><i class="fas fa-user-plus"></i> הרשם</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="menu-header">
+            <h1 class="text-center mb-3">
+                <i class="fas fa-utensils text-primary"></i>
+                התפריט שלנו
+            </h1>
+            <p class="text-center lead text-white mb-4">טעמים מושלמים ומוצרים טריים מדי יום</p>
+        </div>
+
+        <!-- פילטרים וחיפוש -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card filter-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-filter"></i> סנן לפי קטגוריה
+                            </h5>
+                            <div class="search-container">
+                                <input type="text" class="form-control search-input" id="searchInput" placeholder="חפש מוצר...">
+                                <i class="fas fa-search search-icon"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- כפתורי סינון -->
+                        <div class="category-filters mb-3">
+                            <button class="btn filter-btn {{ 'active' if not selected_category else '' }}" data-category="all">
+                                <i class="fas fa-th"></i> הכל
+                            </button>
+                            {% for category in categories %}
+                                <button class="btn filter-btn {{ 'active' if selected_category == category.category else '' }}" 
+                                        data-category="{{ category.category }}">
+                                    {% if category.category == 'עוגות' %}
+                                        <i class="fas fa-birthday-cake"></i>
+                                    {% elif category.category == 'מאפים' %}
+                                        <i class="fas fa-bread-slice"></i>
+                                    {% elif category.category == 'משקאות' %}
+                                        <i class="fas fa-coffee"></i>
+                                    {% elif category.category == 'קינוחים' %}
+                                        <i class="fas fa-ice-cream"></i>
+                                    {% else %}
+                                        <i class="fas fa-utensils"></i>
+                                    {% endif %}
+                                    {{ category.category }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- אפשרויות מיון -->
+                        <div class="d-flex align-items-center gap-3">
+                            <label class="form-label mb-0">מיון לפי:</label>
+                            <select class="form-select form-select-sm" style="width: auto;" onchange="sortMenuItems(this.value)">
+                                <option value="default">ברירת מחדל</option>
+                                <option value="name">שם (א-ת)</option>
+                                <option value="price-low">מחיר (נמוך לגבוה)</option>
+                                <option value="price-high">מחיר (גבוה לנמוך)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- רשת פריטי התפריט -->
+        <div class="menu-items-container">
+            {% if menu_items %}
+                <div class="row" id="menuItemsGrid">
+                    {% for item in menu_items %}
+                    <div class="col-lg-4 col-md-6 mb-4 menu-item-wrapper" 
+                         data-category="{{ item.category }}" 
+                         data-name="{{ item.name|lower }}"
+                         data-price="{{ item.price }}"
+                         data-item-id="{{ item.id }}">
+                        
+                        <div class="card menu-item-card h-100">
+                            <!-- אזור התמונה -->
+                            <div class="menu-item-image-container">
+                                {% if item.image_filename %}
+                                    <img src="{{ url_for('static', filename='images/menu-items/' + item.image_filename) }}" 
+                                         class="menu-item-image" 
+                                         alt="{{ item.name }}"
+                                         loading="lazy"
+                                         onerror="handleImageError(this)">
+                                {% elif item.image_url %}
+                                    <img src="{{ item.image_url }}" 
+                                         class="menu-item-image" 
+                                         alt="{{ item.name }}"
+                                         loading="lazy"
+                                         onerror="handleImageError(this)">
+                                {% else %}
+                                    <div class="menu-item-placeholder">
+                                        {% if item.category == 'עוגות' %}
+                                            <i class="fas fa-birthday-cake fa-3x"></i>
+                                        {% elif item.category == 'מאפים' %}
+                                            <i class="fas fa-bread-slice fa-3x"></i>
+                                        {% elif item.category == 'משקאות' %}
+                                            <i class="fas fa-coffee fa-3x"></i>
+                                        {% elif item.category == 'קינוחים' %}
+                                            <i class="fas fa-ice-cream fa-3x"></i>
+                                        {% else %}
+                                            <i class="fas fa-utensils fa-3x"></i>
+                                        {% endif %}
+                                        <p class="mt-2">אין תמונה זמינה</p>
+                                    </div>
+                                {% endif %}
+
+                                <!-- כפתורי ניהול תמונות למנהל -->
+                                {% if user and user.role == 'employee' %}
+                                    <div class="image-management">
+                                        {% if item.image_filename or item.image_url %}
+                                            <button class="image-btn change-image-btn" 
+                                                    data-item-id="{{ item.id }}" 
+                                                    title="החלף תמונה">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="image-btn delete-image-btn" 
+                                                    data-item-id="{{ item.id }}" 
+                                                    title="מחק תמונה">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        {% else %}
+                                            <button class="image-btn upload-image-btn" 
+                                                    data-item-id="{{ item.id }}" 
+                                                    title="העלה תמונה">
+                                                <i class="fas fa-camera"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                                <!-- תווית אזל מהמלאי -->
+                                {% if not item.is_available %}
+                                    <div class="out-of-stock-overlay">
+                                        <div class="out-of-stock-label">
+                                            אזל מהמלאי
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <!-- תווית "חדש" -->
+                                {% if item.created_at and (now() - item.created_at).days < 7 %}
+                                    <div class="new-item-badge">
+                                        חדש!
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- תוכן הכרטיס -->
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ item.name }}</h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- כפתור מועדפים -->
+                                        <button class="btn btn-sm btn-outline-secondary favorite-btn" 
+                                                data-item-id="{{ item.id }}"
+                                                onclick="toggleFavorite('{{ item.id }}')"
+                                                title="הוסף למועדפים">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                        <span class="category-badge badge bg-secondary">{{ item.category }}</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="card-text flex-grow-1">{{ item.description }}</p>
+                                
+                                <!-- פרטים נוספים -->
+                                <div class="item-details mb-2">
+                                    {% if item.preparation_time %}
+                                        <span class="detail-item">
+                                            <i class="fas fa-clock text-muted"></i>
+                                            {{ item.preparation_time }} דקות
+                                        </span>
+                                    {% endif %}
+                                    {% if item.calories %}
+                                        <span class="detail-item">
+                                            <i class="fas fa-fire text-warning"></i>
+                                            {{ item.calories }} קלוריות
+                                        </span>
+                                    {% endif %}
+                                    {% if item.allergens %}
+                                        <span class="detail-item">
+                                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                                            {{ item.allergens }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- מחיר וזמינות -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="price-tag h5 mb-0 text-primary">₪{{ "%.2f"|format(item.price) }}</span>
+                                    {% if item.is_available %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check"></i> זמין
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times"></i> לא זמין
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- אזור הוספה לעגלה -->
+                                {% if user and user.role == 'customer' and item.is_available %}
+                                    <div class="add-to-cart-section">
+                                        <div class="quantity-selector mb-3">
+                                            <label class="form-label">כמות:</label>
+                                            <div class="input-group quantity-input-group">
+                                                <button class="btn btn-outline-secondary quantity-btn" type="button" data-action="decrease">
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <input type="number" class="form-control quantity-input text-center" 
+                                                       value="1" min="1" max="10" readonly>
+                                                <button class="btn btn-outline-secondary quantity-btn" type="button" data-action="increase">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">בקשות מיוחדות:</label>
+                                            <textarea class="form-control special-requests" rows="2" 
+                                                      placeholder="למשל: ללא סוכר, עם קרם נוסף..."></textarea>
+                                        </div>
+                                        
+                                        <form action="/add_to_cart" method="POST" class="add-to-cart-form">
+                                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                                            <input type="hidden" name="quantity" class="quantity-hidden">
+                                            <input type="hidden" name="special_requests" class="special-requests-hidden">
+                                            <button type="submit" class="btn btn-primary add-to-cart-btn">
+                                                <i class="fas fa-cart-plus"></i> הוסף לעגלה
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% elif not user %}
+                                    <div class="text-center">
+                                        <p class="text-muted mb-2">להזמנה יש להתחבר</p>
+                                        <a href="/login" class="btn btn-outline-primary">
+                                            <i class="fas fa-sign-in-alt"></i> התחבר
+                                        </a>
+                                    </div>
+                                {% elif not item.is_available %}
+                                    <button class="btn btn-secondary w-100" disabled>
+                                        <i class="fas fa-times"></i> לא זמין כרגע
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-items-found">
+                    <div class="text-center p-5">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h4>לא נמצאו מוצרים</h4>
+                        <p class="text-muted">נסה לחפש בקטגוריה אחרת או נקה את החיפוש</p>
+                        <button class="btn btn-primary" onclick="clearFilters()">
+                            <i class="fas fa-refresh"></i> נקה סינון
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- סיכום עגלה קבוע -->
+        {% if user and user.role == 'customer' %}
+        <div class="cart-summary-sticky" id="cartSummary" style="display: none;">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">
+                                <i class="fas fa-shopping-cart text-primary"></i>
+                                <span id="cartItemCount">0</span> פריטים בעגלה
+                            </h6>
+                            <small class="text-muted">
+                                סכום משוער: <span id="cartTotal" class="fw-bold text-primary">₪0.00</span>
+                            </small>
+                        </div>
+                        <div>
+                            <a href="/cart" class="btn btn-outline-primary btn-sm me-2">
+                                <i class="fas fa-eye"></i> צפה בעגלה
+                            </a>
+                            <a href="/checkout" class="btn btn-primary btn-sm">
+                                <i class="fas fa-credit-card"></i> המשך לתשלום
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-birthday-cake"></i> מסעדת רולדין</h5>
+                    <p>המקום הטוב ביותר לעוגות ומאפים טריים</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-map-marker-alt"></i> כתובת</h5>
+                    <p>רחוב הרצל 123<br>תל אביב-יפו</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-phone"></i> צור קשר</h5>
+                    <p>טלפון: 03-1234567<br>אימייל: info@roladin.co.il</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 מסעדת רולדין. כל הזכויות שמורות.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- סקריפטים -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/menu.js"></script>
+</body>
+</html>

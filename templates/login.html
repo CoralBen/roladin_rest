@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התחברות - מסעדת רולדין</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/auth.css" rel="stylesheet">
+</head>
+<body>
+    <a href="/" class="home-link">
+        <i class="fas fa-home"></i>
+    </a>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="position-fixed top-0 start-50 translate-middle-x" style="z-index: 9999; margin-top: 20px;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="login-container">
+        <div class="card auth-card">
+            <div class="card-header auth-card-header">
+                <div class="logo-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <h2 class="mb-0">התחברות</h2>
+                <p class="mb-0 opacity-75">ברוך שובך למסעדת רולדין!</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" id="loginForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user text-primary"></i> שם משתמש
+                        </label>
+                        <div class="input-group auth-input-group">
+                            <span class="input-group-text auth-input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text" class="form-control auth-form-control" id="username" name="username" 
+                                   required placeholder="הזן את שם המשתמש שלך" autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock text-primary"></i> סיסמה
+                        </label>
+                        <div class="password-field">
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text auth-input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control auth-form-control" id="password" name="password" 
+                                       required placeholder="הזן את הסיסמה שלך" autocomplete="current-password">
+                            </div>
+                            <i class="fas fa-eye password-toggle" onclick="togglePassword()"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3 auth-btn-primary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> התחבר
+                    </button>
+                </form>
+
+                <div class="text-center mb-3">
+                    <p class="text-muted mb-2">עדיין לא רשום?</p>
+                    <a href="/register" class="btn btn-outline-primary auth-btn-outline">
+                        <i class="fas fa-user-plus"></i> צור חשבון חדש
+                    </a>
+                </div>
+
+                <div class="demo-users">
+                    <h6 class="text-muted mb-3">
+                        <i class="fas fa-info-circle"></i> משתמשים לדוגמה:
+                    </h6>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="demo-user" onclick="fillLogin('admin', 'admin123')">
+                                <i class="fas fa-user-tie fa-2x text-primary mb-2"></i>
+                                <h6>עובד</h6>
+                                <small class="text-muted">admin / admin123</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="demo-user" onclick="fillLogin('customer1', 'customer123')">
+                                <i class="fas fa-user fa-2x text-success mb-2"></i>
+                                <h6>לקוח</h6>
+                                <small class="text-muted">customer1 / customer123</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

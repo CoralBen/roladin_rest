@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה - מסעדת רולדין</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/auth.css" rel="stylesheet">
+</head>
+<body style="min-height: auto; display: block; align-items: unset; justify-content: unset;">
+    <a href="/" class="home-link">
+        <i class="fas fa-home"></i>
+    </a>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="position-fixed top-0 start-50 translate-middle-x" style="z-index: 9999; margin-top: 20px;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="register-container">
+        <div class="card auth-card">
+            <div class="card-header auth-card-header">
+                <div class="logo-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2 class="mb-0">הצטרף למשפחת רולדין</h2>
+                <p class="mb-0 opacity-75">צור חשבון חדש ותתחיל ליהנות מהטעמים שלנו</p>
+            </div>
+            
+            <div class="card-body p-4">
+                <form method="POST" id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label required">
+                                <i class="fas fa-user field-icon"></i> שם משתמש
+                            </label>
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text auth-input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control auth-form-control" id="username" name="username" 
+                                       required placeholder="בחר שם משתמש ייחודי" minlength="3" maxlength="20"
+                                       autocomplete="username">
+                            </div>
+                            <small id="usernameHelp" class="form-text text-muted">
+                                לפחות 3 תווים, רק אותיות ומספרים
+                            </small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label required">
+                                <i class="fas fa-envelope field-icon"></i> אימייל
+                            </label>
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text auth-input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control auth-form-control" id="email" name="email" 
+                                       required placeholder="your@email.com" autocomplete="email">
+                            </div>
+                            <small id="emailHelp" class="form-text text-muted">
+                                כתובת אימייל תקינה
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label required">
+                                <i class="fas fa-lock field-icon"></i> סיסמה
+                            </label>
+                            <div class="password-field">
+                                <div class="input-group auth-input-group">
+                                    <span class="input-group-text auth-input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control auth-form-control" id="password" name="password" 
+                                           required placeholder="בחר סיסמה חזקה" minlength="6"
+                                           autocomplete="new-password">
+                                </div>
+                                <i class="fas fa-eye password-toggle" onclick="togglePassword('password')"></i>
+                            </div>
+                            <div class="progress strength-progress">
+                                <div id="passwordStrength" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                            <small id="passwordHelp" class="form-text text-muted">
+                                לפחות 6 תווים
+                            </small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">
+                                <i class="fas fa-phone field-icon"></i> טלפון
+                            </label>
+                            <div class="input-group auth-input-group">
+                                <span class="input-group-text auth-input-group-text">
+                                    <i class="fas fa-phone"></i>
+                                </span>
+                                <input type="tel" class="form-control auth-form-control" id="phone" name="phone"
+                                       placeholder="050-1234567" autocomplete="tel">
+                            </div>
+                            <small class="form-text text-muted">
+                                לקבלת עדכונים על ההזמנה
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt field-icon"></i> כתובת למשלוח
+                        </label>
+                        <div class="input-group auth-input-group">
+                            <span class="input-group-text auth-input-group-text">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            <textarea class="form-control auth-form-control" id="address" name="address" rows="2"
+                                      placeholder="רחוב, מספר בית, עיר (אופציונלי)" autocomplete="street-address"></textarea>
+                        </div>
+                        <small class="form-text text-muted">
+                            כתובת זו תשמש כברירת מחדל למשלוחים
+                        </small>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                אני מסכים לתנאי השימוש ומדיניות הפרטיות
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3 auth-btn-primary" id="registerBtn">
+                        <i class="fas fa-user-plus"></i> צור חשבון
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-muted mb-2">כבר יש לך חשבון?</p>
+                    <a href="/login" class="btn btn-outline-primary auth-btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> התחבר
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card auth-card">
+            <div class="card-body">
+                <h5 class="text-center mb-4">
+                    <i class="fas fa-gift text-primary"></i> היתרונות שלך כחבר
+                </h5>
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-shipping-fast fa-2x text-primary mb-2"></i>
+                        <h6>משלוח מהיר</h6>
+                        <small class="text-muted">זמן משלוח קצר יותר לחברים</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-history fa-2x text-success mb-2"></i>
+                        <h6>מעקב הזמנות</h6>
+                        <small class="text-muted">עדכונים בזמן אמת על ההזמנה</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                        <h6>הטבות מיוחדות</h6>
+                        <small class="text-muted">מבצעים והנחות לחברים</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/auth.js"></script>
+</body>
+</html>

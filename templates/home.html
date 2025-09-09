@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מסעדת רולדין - עמוד בית</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/home.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-birthday-cake"></i> מסעדת רולדין
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fas fa-home"></i> בית</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu"><i class="fas fa-utensils"></i> תפריט</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info fw-bold" href="/ai_helper">
+                            <i class="fas fa-robot"></i> עוזר חכם
+                        </a>
+                    </li>
+                    {% if user %}
+                        {% if user.role == 'customer' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/cart">
+                                    <i class="fas fa-shopping-cart"></i> עגלה
+                                    {% if session.cart %}
+                                        <span class="badge bg-danger">{{ session.cart|length }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/my_orders"><i class="fas fa-list"></i> ההזמנות שלי</a>
+                            </li>
+                        {% elif user.role == 'employee' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt"></i> דשבורד</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> התנתק</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> התחבר</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/register"><i class="fas fa-user-plus"></i> הרשם</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="hero-section">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-birthday-cake text-primary"></i>
+                ברוכים הבאים למסעדת רולדין
+            </h1>
+            <p class="lead mb-4">המקום הטוב ביותר לעוגות ומאפים טריים, קפה איכותי וטעמים מושלמים</p>
+            {% if not user %}
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/register" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus"></i> הצטרף אלינו
+                    </a>
+                    <a href="/menu" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-utensils"></i> צפה בתפריט
+                    </a>
+                </div>
+            {% else %}
+                <a href="/menu" class="btn btn-primary btn-lg">
+                    <i class="fas fa-utensils"></i> התחל להזמין
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4 text-white section-title">
+                    <i class="fas fa-list"></i> הקטגוריות שלנו
+                </h2>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            {% for category in categories %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card category-card text-center h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="category-icon">
+                            {% if category.category == 'עוגות' %}
+                                <i class="fas fa-birthday-cake text-primary"></i>
+                            {% elif category.category == 'מאפים' %}
+                                <i class="fas fa-bread-slice text-warning"></i>
+                            {% elif category.category == 'משקאות' %}
+                                <i class="fas fa-coffee text-info"></i>
+                            {% elif category.category == 'קינוחים' %}
+                                <i class="fas fa-ice-cream text-danger"></i>
+                            {% else %}
+                                <i class="fas fa-utensils text-success"></i>
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title">{{ category.category }}</h5>
+                        <div class="mt-auto">
+                            <a href="/menu?category={{ category.category }}" class="btn btn-outline-primary category-btn">
+                                <i class="fas fa-eye"></i> צפה במוצרים
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4 text-white section-title">
+                    <i class="fas fa-star"></i> המוצרים הפופולריים שלנו
+                </h2>
+            </div>
+        </div>
+
+        <div class="row">
+    {% for item in menu_items[:8] %}
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card menu-item-card">
+            {% if item.image_filename %}
+                <img src="{{ url_for('static', filename='images/menu-items/' ~ item.image_filename) }}"
+                     class="card-img-top menu-item-image" alt="{{ item.name }}">
+            {% else %}
+                <div class="card-img-top menu-item-placeholder">
+                    {% if item.category == 'עוגות' %}
+                        <i class="fas fa-birthday-cake fa-4x text-muted"></i>
+                    {% elif item.category == 'מאפים' %}
+                        <i class="fas fa-bread-slice fa-4x text-muted"></i>
+                    {% elif item.category == 'משקאות' %}
+                        <i class="fas fa-coffee fa-4x text-muted"></i>
+                    {% elif item.category == 'קינוחים' %}
+                        <i class="fas fa-ice-cream fa-4x text-muted"></i>
+                    {% else %}
+                        <i class="fas fa-utensils fa-4x text-muted"></i>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="card-title mb-0">{{ item.name }}</h6>
+                    <span class="category-badge">{{ item.category }}</span>
+                </div>
+                
+                <p class="card-text flex-grow-1 small">{{ item.description }}</p>
+                
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <span class="price-tag">₪{{ "%.2f"|format(item.price) }}</span>
+                    {% if user and user.role == 'customer' %}
+                        <form action="/add_to_cart" method="POST" class="d-inline add-to-cart-form">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-sm btn-primary add-to-cart-btn">
+                                <i class="fas fa-plus"></i> הוסף
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="/menu" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i> פרטים
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+        {% if not user %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card cta-card">
+                    <div class="card-body text-center p-5">
+                        <h3 class="mb-3">
+                            <i class="fas fa-heart text-danger"></i>
+                            הצטרף למשפחת רולדין היום!
+                        </h3>
+                        <p class="lead mb-4">הירשם עכשיו וקבל גישה מלאה להזמנות ומעקב אחר ההזמנות שלך</p>
+                        <a href="/register" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus"></i> הרשם עכשיו
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mt-5">
+            <div class="col-md-4 mb-3">
+                <div class="card info-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-truck fa-3x text-primary mb-3"></i>
+                        <h5>משלוח מהיר</h5>
+                        <p class="text-muted">משלוח תוך 30-45 דקות<br>חינם על הזמנות מעל ₪50</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card info-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                        <h5>מרכיבים טבעיים</h5>
+                        <p class="text-muted">כל המוצרים שלנו עשויים<br>ממרכיבים טבעיים ואיכותיים</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card info-card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-clock fa-3x text-info mb-3"></i>
+                        <h5>טרי מדי יום</h5>
+                        <p class="text-muted">המוצרים שלנו נאפים<br>טרי כל יום בבוקר</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-birthday-cake"></i> מסעדת רולדין</h5>
+                    <p>המקום הטוב ביותר לעוגות ומאפים טריים</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-map-marker-alt"></i> כתובת</h5>
+                    <p>רחוב הרצל 123<br>תל אביב-יפו</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="fas fa-phone"></i> צור קשר</h5>
+                    <p>טלפון: 03-1234567<br>אימייל: info@roladin.co.il</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 מסעדת רולדין. כל הזכויות שמורות.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/home.js"></script>
+</body>
+</html>

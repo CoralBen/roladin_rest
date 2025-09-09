@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מסעדת רולדין - דשבורד מנהלים</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-birthday-cake"></i> מסעדת רולדין - דשבורד
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home"></i> בית</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard"><i class="fas fa-tachometer-alt"></i> דשבורד</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu"><i class="fas fa-utensils"></i> תפריט</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i> התנתק</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'info' if category == 'info' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Header Section -->
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-tachometer-alt text-primary"></i>
+                        דשבורד מנהלים
+                    </h1>
+                    <p class="dashboard-subtitle">ברוך הבא, {{ user.username }}! כאן תוכל לנהל את המסעדה שלך</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="dashboard-time">
+                        <i class="fas fa-clock text-info"></i>
+                        <span id="current-time"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stats-card stats-primary">
+                    <div class="stats-content">
+                        <div class="stats-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 class="stats-number" data-count="{{ stats.orders_today }}">{{ stats.orders_today }}</h3>
+                            <p class="stats-label">הזמנות היום</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stats-card stats-success">
+                    <div class="stats-content">
+                        <div class="stats-icon">
+                            <i class="fas fa-shekel-sign"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 class="stats-number">₪{{ "%.0f"|format(stats.revenue_today) }}</h3>
+                            <p class="stats-label">הכנסות היום</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stats-card stats-warning">
+                    <div class="stats-content">
+                        <div class="stats-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 class="stats-number">{{ stats.pending_orders }}</h3>
+                            <p class="stats-label">הזמנות ממתינות</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="stats-card stats-info">
+                    <div class="stats-content">
+                        <div class="stats-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stats-info">
+                            <h3 class="stats-number">{{ stats.active_customers }}</h3>
+                            <p class="stats-label">לקוחות פעילים</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list text-primary"></i>
+                            הזמנות אחרונות
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshOrders()">
+                            <i class="fas fa-sync-alt"></i> רענן
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>מספר הזמנה</th>
+                                        <th>לקוח</th>
+                                        <th>סכום</th>
+                                        <th>סטטוס</th>
+                                        <th>זמן</th>
+                                        <th>פעולות</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body">
+                                    {% for order in recent_orders %}
+                                    <tr>
+                                        <td><strong class="order-number">#{{ order.order_number }}</strong></td>
+                                        <td>{{ order.username }}</td>
+                                        <td>₪{{ "%.2f"|format(order.total_amount) }}</td>
+                                        <td>
+                                            {% if order.status == 'pending' %}
+                                                <span class="badge bg-warning"><i class="fas fa-clock"></i> ממתין</span>
+                                            {% elif order.status == 'confirmed' %}
+                                                <span class="badge bg-success"><i class="fas fa-check"></i> אושר</span>
+                                            {% elif order.status == 'preparing' %}
+                                                <span class="badge bg-info"><i class="fas fa-utensils"></i> בהכנה</span>
+                                            {% elif order.status == 'ready' %}
+                                                <span class="badge bg-primary"><i class="fas fa-bell"></i> מוכן</span>
+                                            {% elif order.status == 'delivered' %}
+                                                <span class="badge bg-secondary"><i class="fas fa-truck"></i> נמסר</span>
+                                            {% elif order.status == 'cancelled' %}
+                                                <span class="badge bg-danger"><i class="fas fa-times"></i> בוטל</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <small class="text-muted time-ago" data-time="{{ order.created_at }}">
+                                                {{ order.created_at[11:16] if order.created_at else 'לא ידוע' }}
+                                            </small>
+                                        </td>
+                                        <td>
+    <button class="btn btn-sm btn-outline-primary" 
+            onclick="viewOrderDetails({{ order.id }})"
+            title="צפה בפרטים">
+        <i class="fas fa-eye"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-success" 
+            onclick="updateOrderStatus({{ order.id }}, 'confirmed')"
+            title="אשר הזמנה">
+        <i class="fas fa-check"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-warning" 
+            onclick="updateOrderStatus({{ order.id }}, 'preparing')"
+            title="התחל הכנה">
+        <i class="fas fa-utensils"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-info" 
+            onclick="updateOrderStatus({{ order.id }}, 'ready')"
+            title="סמן כמוכן">
+        <i class="fas fa-bell"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-secondary" 
+            onclick="updateOrderStatus({{ order.id }}, 'delivered')"
+            title="סמן כנמסר">
+        <i class="fas fa-truck"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-danger" 
+            onclick="updateOrderStatus({{ order.id }}, 'cancelled')"
+            title="בטל הזמנה">
+        <i class="fas fa-times"></i>
+    </button>
+</td>
+
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Management (צד ימין) -->
+            <div class="col-lg-4 mb-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-utensils text-success"></i>
+                            ניהול תפריט מהיר
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">כאן נוסיף בקרוב אפשרות לניהול פריטי התפריט.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

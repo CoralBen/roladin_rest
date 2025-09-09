@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>תשלום והזמנה</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .checkout-card {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 30px;
+      animation: fadeIn 0.6s ease;
+    }
+    .checkout-header {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .btn-primary {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: bold;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-card">
+    <div class="checkout-header">💳 תשלום והזמנה</div>
+
+    <form method="POST">
+      <!-- כתובת -->
+      <div class="mb-3">
+        <label class="form-label">כתובת למשלוח:</label>
+        <input type="text" name="delivery_address" class="form-control" required>
+      </div>
+
+      <!-- טלפון -->
+      <div class="mb-3">
+        <label class="form-label">טלפון ליצירת קשר:</label>
+        <input type="tel" name="delivery_phone" class="form-control" required>
+      </div>
+
+      <!-- הערות -->
+      <div class="mb-3">
+        <label class="form-label">הערות מיוחדות:</label>
+        <textarea name="special_instructions" class="form-control" rows="2"></textarea>
+      </div>
+
+      <!-- שיטת תשלום -->
+      <div class="mb-3">
+        <label class="form-label">שיטת תשלום:</label>
+        <select name="payment_method" id="paymentMethod" class="form-select" required>
+          <option value="credit_card">כרטיס אשראי</option>
+          <option value="cash">מזומן</option>
+          <option value="bit">Bit</option>
+        </select>
+      </div>
+
+      <!-- פרטי אשראי - יופיעו רק אם בוחרים כרטיס אשראי -->
+      <div id="creditCardFields" style="display:none; margin-top:15px;">
+        <div class="mb-3">
+          <label class="form-label">מספר כרטיס:</label>
+          <input type="text" name="card_number" class="form-control" pattern="\d{16}" maxlength="16" placeholder="16 ספרות">
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">תוקף (MM/YY):</label>
+            <input type="text" name="expiry" class="form-control" pattern="\d{2}/\d{2}" placeholder="MM/YY">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">CVV:</label>
+            <input type="text" name="cvv" class="form-control" pattern="\d{3}" maxlength="3" placeholder="3 ספרות">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">שם בעל הכרטיס:</label>
+          <input type="text" name="card_holder" class="form-control">
+        </div>
+      </div>
+
+      <!-- סה"כ -->
+      <h5 class="mt-4">סה״כ לתשלום: <strong>{{ '%.2f'|format(total) }} ₪</strong></h5>
+
+      <!-- כפתורים -->
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('cart') }}" class="btn btn-outline-secondary">⬅ חזרה לעגלה</a>
+        <button type="submit" class="btn btn-primary">אשר הזמנה ✅</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const paymentSelect = document.getElementById("paymentMethod");
+      const creditCardFields = document.getElementById("creditCardFields");
+
+      function toggleFields() {
+        if (paymentSelect.value === "credit_card") {
+          creditCardFields.style.display = "block";
+        } else {
+          creditCardFields.style.display = "none";
+        }
+      }
+
+      paymentSelect.addEventListener("change", toggleFields);
+      toggleFields(); // בדיקה ראשונית
+    });
+  </script>
+</body>
+</html>

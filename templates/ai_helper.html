@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עוזר חכם - מסעדת רולדין</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/ai_helper.css" rel="stylesheet">
+</head>
+<body>
+    <!-- ניווט -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-birthday-cake"></i> מסעדת רולדין
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> בית</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/menu"><i class="fas fa-utensils"></i> תפריט</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/ai_helper"><i class="fas fa-robot"></i> עוזר חכם</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- תוכן -->
+    <div class="container main-content">
+        <h1 class="text-center mb-4"><i class="fas fa-robot text-primary"></i> העוזר החכם</h1>
+        <p class="text-center text-muted mb-4">שאלו אותי כל דבר על האתר, התפריט או ההזמנות שלכם</p>
+
+        <div class="card shadow">
+            <div class="card-body">
+                <textarea id="question" class="form-control mb-3" rows="3" placeholder="הקלד כאן את השאלה שלך..."></textarea>
+                <button class="btn btn-primary w-100" onclick="askAI()">
+                    <i class="fas fa-paper-plane"></i> שלח שאלה
+                </button>
+                <div id="answer" class="alert alert-info mt-4" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2025 מסעדת רולדין. כל הזכויות שמורות.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/ai_helper.js"></script>
+</body>
+</html>
